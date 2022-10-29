@@ -41,8 +41,10 @@ json getData(const json &input) {
         return output;
     }
     bool returnEmptyObject = false;
-    if(helpers::hasRequiredFields(input, {"returnEmptyObject"})) {
-        returnEmptyObject = input["returnEmptyObject"].get<bool>();
+    if(helpers::hasRequiredFields(input, {"options"})) {
+        if(helpers::hasRequiredFields(input["options"], {"returnEmptyObject"})) {
+            returnEmptyObject = input["options"]["returnEmptyObject"].get<bool>();
+		}
     }
     string key = input["key"].get<string>();
     json errorPayload = __validateStorageBucket(key);
