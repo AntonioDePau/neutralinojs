@@ -40,6 +40,10 @@ json getData(const json &input) {
         output["error"] = errors::makeMissingArgErrorPayload();
         return output;
     }
+    bool returnEmptyObject = false;
+    if(helpers::hasRequiredFields(input, {"returnEmptyObject"})) {
+        returnEmptyObject = input["returnEmptyObject"].get<bool>();
+    }
     string key = input["key"].get<string>();
     json errorPayload = __validateStorageBucket(key);
     if(!errorPayload.is_null())
@@ -50,8 +54,10 @@ json getData(const json &input) {
     fs::FileReaderResult fileReaderResult;
     fileReaderResult = fs::readFile(filename);
     if(fileReaderResult.status != errors::NE_ST_OK) {
-        output["error"] = errors::makeErrorPayload(errors::NE_ST_NOSTKEX, key);
-        return output;
+        if(!returnEmptyObject){
+            output["error"] = errors::makeErrorPayload(errors::NE_ST_NOSTKEX, key);
+            return output;
+        }
     }
     output["returnValue"] = fileReaderResult.data;
     output["success"] = true;
